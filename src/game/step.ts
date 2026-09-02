@@ -5,7 +5,7 @@ import { levelById } from './levels'
 import type { GameInput, GameState, Platform, PlayerState, Rect } from './types'
 
 export const MOVE_SPEED = 270
-export const JUMP_SPEED = 550
+export const JUMP_SPEED = 620
 export const GRAVITY = 1500
 export const DASH_SPEED = 720
 

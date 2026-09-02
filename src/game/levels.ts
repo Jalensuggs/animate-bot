@@ -32,20 +32,23 @@ export const LEVELS: LevelDef[] = [
     height: 560,
     spawn: { x: 90, y: 452 },
     ability: 'none',
+    // Marches courtes : le saut monte ~128 px, chaque degre reste sous 55 px.
     platforms: [
       sol(2200),
-      plateforme('p1', 380, 420, 180),
-      plateforme('p2', 700, 350, 180),
-      plateforme('p3', 1040, 410, 220),
-      plateforme('p4', 1460, 340, 180),
-      plateforme('p5', 1790, 400, 180)
+      plateforme('p1', 280, 455, 170),
+      plateforme('p2', 520, 415, 170),
+      plateforme('p3', 760, 375, 170),
+      plateforme('p4', 1040, 430, 200),
+      plateforme('p5', 1340, 390, 180),
+      plateforme('p6', 1640, 450, 180),
+      plateforme('p7', 1880, 415, 160)
     ],
     // Premiere prise en main sans punition : les dangers arrivent au niveau 2.
     hazards: [],
     collectibles: [
-      { id: 'l1-a', x: 460, y: 382 },
-      { id: 'l1-b', x: 790, y: 312 },
-      { id: 'l1-c', x: 1550, y: 302 }
+      { id: 'l1-a', x: 360, y: 418 },
+      { id: 'l1-b', x: 845, y: 338 },
+      { id: 'l1-c', x: 1430, y: 352 }
     ],
     checkpoints: [{ id: 'l1-cp', x: 1080, y: 440, width: 36, height: 60 }],
     breakables: [],

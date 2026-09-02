@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { cameraFor } from './camera'
 import { intersects } from './collision'
 import { LEVELS } from './levels'
-import { createGame, DASH_SPEED, stepGame } from './step'
+import { createGame, DASH_SPEED, GRAVITY, JUMP_SPEED, stepGame } from './step'
 import type { GameInput } from './types'
 
 const rien: GameInput = {
@@ -47,6 +47,21 @@ describe('niveaux', () => {
       expect(level.collectibles.length).toBeGreaterThanOrEqual(3)
     }
   })
+
+  it('garde les marches du premier niveau dans le saut', () => {
+    const level = LEVELS[0]!
+    const sol = level.platforms.find((platform) => platform.id === 'sol')!
+    const marches = level.platforms
+      .filter((platform) => platform.id !== 'sol')
+      .sort((a, b) => a.x - b.x)
+    const hauteurMax = (JUMP_SPEED * JUMP_SPEED) / (2 * GRAVITY)
+    let support = sol.y
+    for (const marche of marches) {
+      const montee = support - marche.y
+      expect(montee).toBeLessThanOrEqual(hauteurMax * 0.7)
+      support = Math.min(support, marche.y)
+    }
+  })
 })
 
 describe('simulation', () => {
@@ -67,18 +82,14 @@ describe('simulation', () => {
     expect(game.player.vy).toBeGreaterThan(vy)
   })
 
-  it('rend visible une pression breve avant de revenir au sol', () => {
+  it('atteint la premiere marche du tutoriel depuis le sol', () => {
     let game = createGame(1, 'cercle')
-    for (let i = 0; i < 30; i++) game = stepGame(game, rien, 1 / 60)
-    const sol = game.player.y
-
-    game = stepGame(game, { ...rien, jumpPressed: true }, 1 / 60)
-    for (let i = 0; i < 11; i++) game = stepGame(game, rien, 1 / 60)
-    expect(game.player.y).toBeLessThan(sol - 50)
-
-    for (let i = 0; i < 108; i++) game = stepGame(game, rien, 1 / 60)
-    expect(game.player.y).toBe(sol)
+    for (let i = 0; i < 20; i++) game = stepGame(game, rien, 1 / 60)
+    game = stepGame(game, { ...rien, jumpPressed: true, right: true }, 1 / 60)
+    for (let i = 0; i < 45; i++) game = stepGame(game, { ...rien, right: true }, 1 / 60)
     expect(game.player.grounded).toBe(true)
+    expect(game.player.y).toBeLessThan(460)
+    expect(game.player.x).toBeGreaterThan(280)
   })
 
   it('declenche le sprint du troisieme niveau', () => {

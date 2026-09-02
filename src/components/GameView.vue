@@ -10,6 +10,7 @@ import type { ShapeId } from '@/bot/skins'
 import { t, type Cle } from '@/i18n'
 import { createInputController } from '@/ui/game/useInput'
 import { useGameLoop } from '@/ui/game/useGameLoop'
+import { debugLog } from '@/ui/game/debugLog'
 
 const props = defineProps<{
   shape: ShapeId
@@ -66,6 +67,17 @@ useGameLoop((dt) => {
   const before = game.value.status
   if (before === 'running') game.value = stepGame(game.value, input.read(), dt)
   else input.read()
+  if (before !== game.value.status) {
+    // #region agent log
+    debugLog('E', 'GameView.vue:gameLoop', 'game status changed in view', {
+      before,
+      after: game.value.status,
+      levelId: game.value.level.id,
+      playerX: game.value.player.x,
+      playerY: game.value.player.y
+    })
+    // #endregion
+  }
   if (game.value.status === 'won' && !announcedWin) {
     announcedWin = true
     emit('complete', game.value.level.id)

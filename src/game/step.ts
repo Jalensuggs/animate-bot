@@ -3,6 +3,7 @@ import type { StateId } from '@/bot/states'
 import { inflate, intersects, playerRect, pointNearPlayer } from './collision'
 import { levelById } from './levels'
 import type { GameInput, GameState, Platform, PlayerState, Rect } from './types'
+import { debugLog } from '@/ui/game/debugLog'
 
 export const MOVE_SPEED = 270
 export const JUMP_SPEED = 550
@@ -113,6 +114,20 @@ export function stepGame(source: GameState, input: GameInput, rawDt: number): Ga
     activated: [...source.activated]
   }
   const player = state.player
+  const jumpAttempt = input.jumpPressed
+  if (jumpAttempt) {
+    // #region agent log
+    debugLog('C', 'step.ts:stepGame:entry', 'jump input reached simulation', {
+      rawDt,
+      status: source.status,
+      grounded: source.player.grounded,
+      coyoteTime: source.player.coyoteTime,
+      jumpBuffer: source.player.jumpBuffer,
+      y: source.player.y,
+      vy: source.player.vy
+    })
+    // #endregion
+  }
   state.elapsed += dt
   player.stateTime += dt
   player.invulnerable = Math.max(0, player.invulnerable - dt)
@@ -197,6 +212,18 @@ export function stepGame(source: GameState, input: GameInput, rawDt: number): Ga
     player.grounded = false
     player.jumpBuffer = 0
   }
+  if (jumpAttempt) {
+    // #region agent log
+    debugLog('C', 'step.ts:stepGame:jump-result', 'jump attempt simulation result', {
+      grounded: player.grounded,
+      coyoteTime: player.coyoteTime,
+      jumpBuffer: player.jumpBuffer,
+      y: player.y,
+      vy: player.vy,
+      launched: player.vy < 0
+    })
+    // #endregion
+  }
 
   for (const item of state.level.collectibles) {
     if (state.collected.includes(item.id) || !pointNearPlayer(player, item, 42)) continue
@@ -217,7 +244,23 @@ export function stepGame(source: GameState, input: GameInput, rawDt: number): Ga
   ) {
     toucheDanger(state)
   }
-  if (intersects(playerRect(player), state.level.goal)) {
+  const goalIntersects = intersects(playerRect(player), state.level.goal)
+  if (
+    input.right &&
+    player.x > state.level.goal.x - 200 &&
+    Math.floor(source.elapsed * 4) !== Math.floor(state.elapsed * 4)
+  ) {
+    // #region agent log
+    debugLog('D', 'step.ts:stepGame:goal-probe', 'player movement sampled near goal', {
+      playerRect: playerRect(player),
+      goal: state.level.goal,
+      goalIntersects,
+      vx: player.vx,
+      status: state.status
+    })
+    // #endregion
+  }
+  if (goalIntersects) {
     state.status = 'won'
     montre(player, 'notify', 10)
   }

@@ -16,6 +16,10 @@ const en: typeof fr = {
     back: 'Back to the player'
   },
 
+  interactions: {
+    click: 'Click to wink'
+  },
+
   rail: {
     nav: 'Sections',
     customize: 'Customise',

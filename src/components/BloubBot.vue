@@ -4,7 +4,8 @@ import { NOTIF_BLUE } from '@/bot/decor'
 import { BotEngine, type BotFrame } from '@/bot/engine'
 import { clamp, easings } from '@/bot/math'
 import { t } from '@/i18n'
-import { lookTarget, TURN_TIME, type GazeScript } from '@/ui/gaze'
+import { lookTarget, lookFree, TURN_TIME, type GazeScript } from '@/ui/gaze'
+import type { LookStyle } from '@/ui/reactions'
 import {
   DEFAULT_EXPRESSION,
   EXPRESSION_BY_ID
@@ -50,6 +51,11 @@ const props = withDefaults(
      */
     follow?: boolean
     /**
+     * Style de suivi : `reglages` fait le demi-tour vers le panneau gauche,
+     * `libre` pivote face au spectateur (personnalisation, lecteur en pause).
+     */
+    lookStyle?: LookStyle
+    /**
      * Regard scripte de l'arrivee : evalue a chaque image avec le temps ecoule
      * depuis qu'il a ete pose. Independant de `follow`, qui vise le pointeur —
      * ici c'est le script qui decide de tout, y compris de sa duree.
@@ -65,6 +71,7 @@ const props = withDefaults(
     frozenAt: undefined,
     cycle: () => defaultCycle().blocks,
     follow: false,
+    lookStyle: 'reglages',
     gaze: null
   }
 )
@@ -243,19 +250,25 @@ function aim() {
    * masque — `getBoundingClientRect` rend alors des zeros.
    */
   if (!box || box.width === 0 || box.height === 0) return
-  // le tour part a l'entree dans la vue, en meme temps que les anneaux
-  if (!aiming) turnSince = clock
+  if (!aiming && props.lookStyle !== 'libre') turnSince = clock
   const demiLargeur = Math.max(1, window.innerWidth / 2)
   const demiHauteur = Math.max(1, window.innerHeight / 2)
-  engine.setLook(
-    lookTarget({
-      nx: pointer ? clamp((pointer.x - (box.left + box.width / 2)) / demiLargeur, -1, 1) : 0,
-      ny: pointer ? clamp((pointer.y - (box.top + box.height / 2)) / demiHauteur, -1, 1) : 0,
-      tour: easings.easeOutQuint(clamp((clock - turnSince) / TURN_TIME)),
-      pointer: pointer !== null
-    }),
-    clock
-  )
+  const nx = pointer ? clamp((pointer.x - (box.left + box.width / 2)) / demiLargeur, -1, 1) : 0
+  const ny = pointer ? clamp((pointer.y - (box.top + box.height / 2)) / demiHauteur, -1, 1) : 0
+  const pointerOn = pointer !== null
+  if (props.lookStyle === 'libre') {
+    engine.setLook(lookFree({ nx, ny, pointer: pointerOn }), clock)
+  } else {
+    engine.setLook(
+      lookTarget({
+        nx,
+        ny,
+        tour: easings.easeOutQuint(clamp((clock - turnSince) / TURN_TIME)),
+        pointer: pointerOn
+      }),
+      clock
+    )
+  }
   aiming = true
 }
 

@@ -22,5 +22,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "extension/**/*.ts", "extension/**/*.vue", "vite.config.ts", "vite.extension.config.ts"]
 }

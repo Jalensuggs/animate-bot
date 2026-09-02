@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Animate Bot — Browser Pet",
+  "short_name": "Animate Bot",
+  "version": "0.1.0",
+  "description": "A floating SVG companion on every page: custom shape, colour and mood, with eyes that follow your cursor.",
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Animate Bot settings",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icons/icon.svg"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "128": "icons/icon.svg"
+  }
+}

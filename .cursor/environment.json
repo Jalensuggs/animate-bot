@@ -1,0 +1,17 @@
+{
+  "name": "Animate Bot",
+  "install": "pnpm install --frozen-lockfile",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "pnpm dev",
+      "description": "Vite dev server for Animate Bot on http://localhost:5190"
+    }
+  ],
+  "ports": [
+    {
+      "name": "vite dev server",
+      "port": 5190
+    }
+  ]
+}

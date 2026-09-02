@@ -1,4 +1,4 @@
-export type DebugHypothesis = 'A' | 'B' | 'C' | 'D' | 'E'
+export type DebugHypothesis = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
 
 export function debugLog(
   hypothesisId: DebugHypothesis,

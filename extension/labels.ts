@@ -18,7 +18,9 @@ const UI = {
     expression: 'Expression',
     color: 'Couleur',
     size: 'Taille',
-    hint: 'Glissez pour déplacer · Cliquez pour cligner · La molette change l’humeur'
+    hint: 'Glissez pour déplacer · Cliquez pour cligner · La molette change l’humeur',
+    blocked:
+      'Cette page (nouvel onglet Chrome) n’accepte pas les extensions. Ouvrez un site normal (ex. baidu.com) puis actualisez.'
   },
   en: {
     title: 'Animate Bot',
@@ -27,7 +29,9 @@ const UI = {
     expression: 'Expression',
     color: 'Colour',
     size: 'Size',
-    hint: 'Drag to move · Click to wink · Scroll wheel changes mood'
+    hint: 'Drag to move · Click to wink · Scroll wheel changes mood',
+    blocked:
+      'This page (Chrome new tab) blocks extensions. Open a normal website (e.g. baidu.com) and refresh.'
   },
   zh: {
     title: 'Animate Bot',
@@ -36,7 +40,8 @@ const UI = {
     expression: '表情',
     color: '颜色',
     size: '大小',
-    hint: '拖动移动 · 点击眨眼 · 滚轮切换心情'
+    hint: '拖动移动 · 点击眨眼 · 滚轮切换心情',
+    blocked: '此页面（Chrome 新标签页）不支持扩展。请打开普通网站（如 baidu.com）并刷新页面。'
   }
 } as const
 

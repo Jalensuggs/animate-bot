@@ -6,7 +6,6 @@ import { defineConfig } from 'vite'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
 
-/** Copie manifest et icones apres le build Rollup. */
 function extensionAssets() {
   return {
     name: 'extension-assets',
@@ -36,12 +35,14 @@ export default defineConfig({
       '@/i18n': resolve(root, 'extension/i18n-stub.ts')
     }
   },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production')
+  },
   build: {
     outDir: 'dist-extension',
-    emptyOutDir: true,
+    emptyOutDir: false,
     rollupOptions: {
       input: {
-        content: resolve(root, 'extension/content.ts'),
         popup: resolve(root, 'extension/popup.html'),
         background: resolve(root, 'extension/background.ts')
       },
@@ -51,8 +52,5 @@ export default defineConfig({
         assetFileNames: '[name][extname]'
       }
     }
-  },
-  define: {
-    'process.env.NODE_ENV': JSON.stringify('production')
   }
 })

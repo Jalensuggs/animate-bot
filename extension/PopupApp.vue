@@ -10,10 +10,22 @@ import { readSettings, writeSettings } from './storage'
 import type { PetSettings } from './types'
 
 const settings = ref<PetSettings | null>(null)
+const blockedPage = ref(false)
 const PREVIEW_AT = 1
+
+function isBlockedUrl(url: string) {
+  return (
+    url.startsWith('chrome://') ||
+    url.startsWith('chrome-extension://') ||
+    url.startsWith('edge://') ||
+    url.startsWith('about:')
+  )
+}
 
 onMounted(async () => {
   settings.value = await readSettings()
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+  blockedPage.value = isBlockedUrl(tab?.url ?? '')
 })
 
 async function patch(partial: Partial<PetSettings>) {
@@ -36,6 +48,7 @@ function toggleEnabled() {
       </label>
     </header>
 
+    <p v-if="blockedPage" class="popup__warn">{{ L.blocked }}</p>
     <p class="popup__hint">{{ L.hint }}</p>
 
     <section class="popup__section">
@@ -150,6 +163,16 @@ function toggleEnabled() {
   gap: 6px;
   font-size: 12px;
   cursor: pointer;
+}
+
+.popup__warn {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff3cd;
+  color: #664d03;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .popup__hint {

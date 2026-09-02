@@ -4,7 +4,7 @@
   "short_name": "Animate Bot",
   "version": "0.1.0",
   "description": "A floating SVG companion on every page: custom shape, colour and mood, with eyes that follow your cursor.",
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",

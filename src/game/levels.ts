@@ -62,10 +62,10 @@ export const LEVELS: LevelDef[] = [
     ability: 'none',
     platforms: [
       sol(2400),
-      plateforme('toit1', 430, 398, 430, 30),
+      plateforme('toit1', 430, 435, 430, 25),
       plateforme('p1', 980, 420, 160),
       plateforme('p2', 1240, 350, 160),
-      plateforme('toit2', 1510, 398, 380, 30),
+      plateforme('toit2', 1510, 435, 380, 25),
       plateforme('p3', 1990, 355, 190)
     ],
     hazards: [danger(900, 65), danger(1425, 65), danger(1910, 60)],

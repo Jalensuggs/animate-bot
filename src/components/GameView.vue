@@ -77,6 +77,12 @@ watch(
   () => startLevel(game.value.level.id)
 )
 watch(
+  () => props.initialLevel,
+  (id) => {
+    if (id !== game.value.level.id) startLevel(id)
+  }
+)
+watch(
   () => game.value.level.id,
   () => {
     announcedWin = false
@@ -263,6 +269,7 @@ onBeforeUnmount(() => {
           :shape="shape"
           :color="color"
           :expression="expression"
+          :facing="game.player.facing"
           :invulnerable="game.player.invulnerable > 0"
         />
       </svg>
@@ -271,12 +278,13 @@ onBeforeUnmount(() => {
     <div class="game-tip">
       <strong>{{ hint }}</strong>
       <span>
-        {{ t('game.ability') }}:
+        {{ t('game.keys') }} · {{ t('game.ability') }}:
         {{ t(abilityKeys[game.level.ability]) }}
       </span>
     </div>
 
     <GameControls
+      :ability="game.level.ability"
       @direction="input.direction"
       @jump="input.jump"
       @skill="input.skill"

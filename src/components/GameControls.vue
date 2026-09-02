@@ -1,11 +1,22 @@
 <script setup lang="ts">
-import { t } from '@/i18n'
+import type { Ability } from '@/game/types'
+import { t, type Cle } from '@/i18n'
+
+const props = defineProps<{ ability: Ability }>()
 
 const emit = defineEmits<{
   direction: [name: 'left' | 'right', pressed: boolean]
   jump: []
   skill: []
 }>()
+
+const skillKeys: Record<Ability, Cle> = {
+  none: 'game.skill',
+  dash: 'game.skill_dash',
+  shield: 'game.skill_shield',
+  burst: 'game.skill_burst',
+  orbit: 'game.skill_orbit'
+}
 
 function direction(event: PointerEvent, name: 'left' | 'right', pressed: boolean) {
   event.preventDefault()
@@ -40,7 +51,7 @@ function direction(event: PointerEvent, name: 'left' | 'right', pressed: boolean
     </div>
     <div class="pointer-events-auto flex items-end gap-2">
       <button type="button" class="game-touch game-touch--skill" @pointerdown.prevent="emit('skill')">
-        {{ t('game.skill') }}
+        {{ t(skillKeys[props.ability]) }}
       </button>
       <button type="button" class="game-touch game-touch--jump" @pointerdown.prevent="emit('jump')">
         {{ t('game.jump') }}

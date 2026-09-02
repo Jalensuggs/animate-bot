@@ -46,6 +46,8 @@ function resetAtCheckpoint(state: GameState) {
   state.player.vx = 0
   state.player.vy = 0
   state.player.grounded = false
+  state.player.coyoteTime = 0
+  state.player.jumpBuffer = 0
 }
 
 function toucheDanger(state: GameState) {
@@ -80,6 +82,8 @@ export function createGame(levelId: number, shape: ShapeId): GameState {
       height: size.height,
       facing: 1,
       grounded: false,
+      coyoteTime: 0,
+      jumpBuffer: 0,
       lives: 3,
       invulnerable: 0,
       abilityTime: 0.75,
@@ -112,6 +116,8 @@ export function stepGame(source: GameState, input: GameInput, rawDt: number): Ga
   state.elapsed += dt
   player.stateTime += dt
   player.invulnerable = Math.max(0, player.invulnerable - dt)
+  player.coyoteTime = player.grounded ? 0.1 : Math.max(0, player.coyoteTime - dt)
+  player.jumpBuffer = input.jumpPressed ? 0.12 : Math.max(0, player.jumpBuffer - dt)
   player.abilityTime = Math.max(0, player.abilityTime - dt)
   if (player.abilityTime === 0 && player.state !== 'idle') {
     player.state = 'idle'
@@ -147,9 +153,11 @@ export function stepGame(source: GameState, input: GameInput, rawDt: number): Ga
     player.vx = direction * MOVE_SPEED
     if (direction) player.facing = direction < 0 ? -1 : 1
   }
-  if (input.jumpPressed && player.grounded) {
+  if (player.jumpBuffer > 0 && player.coyoteTime > 0) {
     player.vy = -JUMP_SPEED
     player.grounded = false
+    player.coyoteTime = 0
+    player.jumpBuffer = 0
   }
 
   const obstacles = solids(state)
@@ -181,6 +189,13 @@ export function stepGame(source: GameState, input: GameInput, rawDt: number): Ga
       player.y = bottom + player.height / 2
       player.vy = 0
     }
+  }
+  // Une pression juste avant l'atterrissage est gardee quelques images : le
+  // tactile et le clavier n'exigent pas de viser l'image exacte du contact.
+  if (player.grounded && player.jumpBuffer > 0) {
+    player.vy = -JUMP_SPEED
+    player.grounded = false
+    player.jumpBuffer = 0
   }
 
   for (const item of state.level.collectibles) {

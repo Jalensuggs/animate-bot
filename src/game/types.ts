@@ -60,6 +60,8 @@ export interface PlayerState extends Point {
   height: number
   facing: -1 | 1
   grounded: boolean
+  coyoteTime: number
+  jumpBuffer: number
   lives: number
   invulnerable: number
   abilityTime: number

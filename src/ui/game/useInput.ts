@@ -17,9 +17,18 @@ export function createInputController(): GameInputController {
   const onKeyDown = (event: KeyboardEvent) => {
     const code = event.code
     if (
-      ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space', 'KeyA', 'KeyD', 'KeyZ', 'KeyX', 'KeyR'].includes(
-        code
-      )
+      [
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'Space',
+        'KeyA',
+        'KeyD',
+        'KeyW',
+        'KeyZ',
+        'KeyX',
+        'KeyR'
+      ].includes(code)
     ) {
       event.preventDefault()
     }
@@ -46,7 +55,7 @@ export function createInputController(): GameInputController {
       const input = {
         left: active('ArrowLeft', 'KeyA', 'TouchLeft'),
         right: active('ArrowRight', 'KeyD', 'TouchRight'),
-        jumpPressed: once('ArrowUp', 'Space', 'TouchJump'),
+        jumpPressed: once('ArrowUp', 'Space', 'KeyW', 'TouchJump'),
         skillPressed: once('KeyZ', 'KeyX', 'TouchSkill'),
         restartPressed: once('KeyR', 'TouchRestart')
       }

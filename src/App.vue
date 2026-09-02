@@ -209,12 +209,15 @@ const elapsed = ref(0)
 const cycle = computed(() => cycles.value.find((c) => c.id === activeId.value) ?? cycles.value[0]!)
 
 /**
- * Ce que joue la pastille OBS : un etat precis en boucle si le lien le nomme
- * (`#obs&etat=orbit`), sinon le montage courant de l'utilisateur — le meme que la
- * vue Animations, releve du stockage.
+ * Ce que joue la pastille OBS, par ordre de priorite : une suite encodee dans le
+ * lien (`#obs&suite=…`, la seule facon de partager un montage sur mesure), sinon
+ * un etat precis en boucle (`#obs&etat=orbit`), sinon le montage courant de
+ * l'utilisateur — le meme que la vue Animations, releve du stockage.
  */
-const cycleObs = computed(() =>
-  initial.obs.etat ? [makeBlock(initial.obs.etat)] : cycle.value.blocks
+const cycleObs = computed(
+  () =>
+    initial.obs.suite ??
+    (initial.obs.etat ? [makeBlock(initial.obs.etat)] : cycle.value.blocks)
 )
 
 // un lien vers un etat precis ouvre le montage qui le contient

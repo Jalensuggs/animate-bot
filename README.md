@@ -40,9 +40,12 @@ A few URLs are worth knowing:
 - `#etat=orbit&stop`: opens one state directly, playback paused.
 - `#obs`: the avatar alone on a transparent background, looping your saved
   montage — drop it in as an OBS (or any capture tool) browser source to use the
-  bot as a live desktop pet. Add `&etat=<id>` to loop a single state instead,
-  `&stop` to freeze it, and the usual `&forme=…&couleur=…&expression=…` to pin a
-  look, so one link fully describes the pet.
+  bot as a live desktop pet. Add `&etat=<id>` to loop a single state, or
+  `&suite=orbit,wink:1,idle:5` to encode a whole sequence in the link itself
+  (state names separated by commas, each with an optional `:seconds` hold), which
+  is how you share a bespoke montage without relying on saved state. `&stop`
+  freezes it, and the usual `&forme=…&couleur=…&expression=…` pin a look, so one
+  link fully describes the pet.
 
 ![The 14 states, frozen side by side](docs/states.png)
 

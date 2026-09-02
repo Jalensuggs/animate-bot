@@ -15,7 +15,11 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `&forme=…&couleur=…&expression=…` share parameters pin a look, so one link fully
   describes the pet. Transparency needed no new drawing: the body stays opaque and
   the eyes' white is the `paper` fill the component already paints under the
-  silhouette, so only the page background gives way to transparent.
+  silhouette, so only the page background gives way to transparent. `&suite=` also
+  encodes a whole montage in the link (`orbit,wink:1,idle:5` — comma-separated
+  states, each with an optional `:seconds` hold), since the default montage lives
+  in `localStorage` and so doesn't travel with a shared link; unknown states are
+  skipped and given durations are clamped to a block's bounds.
 
 ### Fixed
 

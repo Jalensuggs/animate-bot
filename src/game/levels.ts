@@ -40,7 +40,8 @@ export const LEVELS: LevelDef[] = [
       plateforme('p4', 1460, 340, 180),
       plateforme('p5', 1790, 400, 180)
     ],
-    hazards: [danger(1320, 90)],
+    // Premiere prise en main sans punition : les dangers arrivent au niveau 2.
+    hazards: [],
     collectibles: [
       { id: 'l1-a', x: 460, y: 382 },
       { id: 'l1-b', x: 790, y: 312 },

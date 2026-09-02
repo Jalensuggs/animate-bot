@@ -106,8 +106,8 @@ describe('simulation', () => {
   })
 
   it('perd une vie sur un danger et repart au checkpoint', () => {
-    const source = createGame(1, 'cercle')
-    source.player.x = 1340
+    const source = createGame(2, 'cercle')
+    source.player.x = 920
     source.player.y = 470
     source.player.invulnerable = 0
     const game = stepGame(source, rien, 0)

@@ -7,7 +7,7 @@ import { LEVELS } from '@/game/levels'
 import { createGame, stepGame } from '@/game/step'
 import type { Ability, GameState } from '@/game/types'
 import type { ShapeId } from '@/bot/skins'
-import { t, type Cle } from '@/i18n'
+import { pluriel, t, type Cle } from '@/i18n'
 import { createInputController } from '@/ui/game/useInput'
 import { useGameLoop } from '@/ui/game/useGameLoop'
 
@@ -300,7 +300,7 @@ onBeforeUnmount(() => {
         </template>
         <template v-else-if="game.status === 'won'">
           <p class="game-kicker">{{ t('game.completed') }}</p>
-          <h2>{{ remaining ? t('game.missed', { n: remaining }) : t('game.perfect') }}</h2>
+          <h2>{{ remaining ? pluriel('game.missed', remaining) : t('game.perfect') }}</h2>
           <button
             v-if="game.level.id < LEVELS.length"
             type="button"

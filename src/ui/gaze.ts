@@ -168,3 +168,24 @@ export function lookTarget({ nx, ny, tour, pointer }: Aim): Look {
     wander: pointer ? 0 : 1
   }
 }
+
+/**
+ * Suivi libre du curseur, sans demi-tour ni pose de reglages : la tete reste
+ * face au spectateur et pivote vers le pointeur. Utilise en personnalisation et
+ * quand le lecteur est en pause sur un etat a visage de repos.
+ */
+export interface FreeAim {
+  nx: number
+  ny: number
+  pointer: boolean
+}
+
+export function lookFree({ nx, ny, pointer }: FreeAim): Look {
+  return {
+    yaw: nx * YAW_MAX,
+    pitch: PITCH - ny * PITCH_MAX,
+    mix: pointer ? 1 : 0,
+    spin: 0,
+    wander: pointer ? 0 : 1
+  }
+}

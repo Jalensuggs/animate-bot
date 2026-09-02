@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { t } from '@/i18n'
+import type { ViewId } from '@/ui/views'
 
-export type ViewId = 'animations' | 'personnaliser' | 'reglages'
+export type { ViewId }
 
 const view = defineModel<ViewId>({ default: 'personnaliser' })
 

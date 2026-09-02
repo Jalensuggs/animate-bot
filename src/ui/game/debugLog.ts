@@ -6,7 +6,7 @@ export function debugLog(
   message: string,
   data: Record<string, unknown>
 ) {
-  if (typeof navigator === 'undefined') return
+  if (typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return
   const entry = JSON.stringify({
     hypothesisId,
     location,

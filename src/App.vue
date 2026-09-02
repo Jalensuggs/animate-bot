@@ -43,6 +43,7 @@ import {
 } from '@/ui/export'
 import { HUMEURS } from '@/ui/gaze'
 import { INTRO, INTRO_GAZE, POSE_AT, introDue } from '@/ui/intro'
+import { litObs } from '@/ui/obs'
 import { lienPartage, litReglagesPartages } from '@/ui/partage'
 import { ecris, lis, type NomStocke } from '@/ui/stockage'
 import {
@@ -87,12 +88,32 @@ function readHash() {
     // `#arrivee` : rejouer l'arrivee sans avoir a revenir sur le site. Elle ne se
     // joue qu'a la VENUE, donc sans ce lien on ne peut pas la revoir de la seance.
     arrivee: params.has('arrivee'),
+    // `#obs` : la scene seule sur fond transparent, pour une source navigateur.
+    obs: litObs(location.hash),
     partage: litReglagesPartages(location.hash)
   }
 }
 
 const initial = readHash()
 const gallery = ref(initial.gallery)
+
+/* --------------------------------------------------------------------- obs */
+
+/**
+ * Pastille OBS : la scene seule sur fond transparent, decidee UNE FOIS a
+ * l'ouverture. L'URL est fixe dans la source navigateur d'OBS, elle ne navigue
+ * pas ; un changement de fragment vers ou depuis `#obs` recharge (cf. le
+ * `hashchange`), comme l'arrivee, pour repartir d'un decor propre.
+ *
+ * Le fond transparent se pose sur `<body>` (qui porte le `--paper` de la page) :
+ * hors OBS rien ne change, la regle `body.obs` de `styles.css` ne s'applique que
+ * la. C'est ce qui laisse OBS composer le bot par-dessus le stream — le corps
+ * reste opaque, et le blanc des yeux vient du `paper` que le composant peint sous
+ * la silhouette, exactement comme sur la page.
+ */
+const obs = initial.obs.obs
+const playObs = initial.obs.playing
+if (obs) document.body.classList.add('obs')
 
 /* ----------------------------------------------------------------- arrivee */
 
@@ -130,16 +151,19 @@ const [nav] = performance.getEntriesByType('navigation') as PerformanceNavigatio
 const navigation = nav?.type ?? 'navigate'
 
 const intro = ref(
+  // La pastille OBS n'a pas d'arrivee : elle ouvre directement sur l'animal de
+  // bureau, sans mise en scene d'ouverture de page.
+  !obs &&
   // `#arrivee` demande explicitement a la voir : il court-circuite la regle de
   // declenchement, c'est tout son objet — y compris apres rechargement, sinon on
   // ne pourrait la regarder qu'une fois.
-  initial.arrivee ||
+  (initial.arrivee ||
     introDue({
       named: initial.named,
       gallery: initial.gallery,
       rechargement: navigation !== 'navigate',
       calme: calme.value
-    })
+    }))
 )
 
 /* ------------------------------------------------------------------ cycles */
@@ -183,6 +207,15 @@ const block = ref(0)
 const elapsed = ref(0)
 
 const cycle = computed(() => cycles.value.find((c) => c.id === activeId.value) ?? cycles.value[0]!)
+
+/**
+ * Ce que joue la pastille OBS : un etat precis en boucle si le lien le nomme
+ * (`#obs&etat=orbit`), sinon le montage courant de l'utilisateur — le meme que la
+ * vue Animations, releve du stockage.
+ */
+const cycleObs = computed(() =>
+  initial.obs.etat ? [makeBlock(initial.obs.etat)] : cycle.value.blocks
+)
 
 // un lien vers un etat precis ouvre le montage qui le contient
 if (initial.named) {
@@ -303,6 +336,16 @@ window.addEventListener('hashchange', () => {
     return
   }
   const next = readHash()
+  /*
+   * Entrer dans la pastille OBS ou en sortir change tout le rendu (fond
+   * transparent, scene seule) : on recharge pour repartir d'un decor propre,
+   * comme pour l'arrivee. OBS lui-meme ne navigue jamais, c'est le cas d'un essai
+   * dans un navigateur ordinaire.
+   */
+  if (next.obs.obs !== obs) {
+    location.reload()
+    return
+  }
   /*
    * L'arrivee met en scene l'OUVERTURE de la page : la rejouer a chaud
    * demanderait de remonter tout le decor — panneaux refermes, lecteur rembobine,
@@ -789,7 +832,24 @@ watch(
 </script>
 
 <template>
-  <div v-if="gallery" class="p-5">
+  <!--
+    Pastille OBS : la scene seule, sur fond transparent (`body.obs`), remplissant
+    la source navigateur. Aucune interface — ni rail, ni panneau, ni montage — et
+    l'avatar est cadre au plus petit cote de la fenetre pour rester entier quelle
+    que soit la taille donnee a la source dans OBS.
+  -->
+  <div v-if="obs" class="obs">
+    <BloubBot
+      :cycle="cycleObs"
+      :size="440"
+      :shape="shape"
+      :color="color"
+      :expression="expression"
+      :playing="playObs"
+    />
+  </div>
+
+  <div v-else-if="gallery" class="p-5">
     <a class="text-xs text-[var(--muted)] underline underline-offset-2" href="#">
       {{ t('gallery.back') }}
     </a>

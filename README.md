@@ -34,10 +34,18 @@ Anything on screen can be exported: the avatar as SVG, PNG or an animated GIF, a
 a whole timeline as GIF or MP4. The still formats need no library at all, and the
 video encoder is only fetched the first time you ask for one.
 
-Two URLs are worth knowing:
+A few URLs are worth knowing:
 
 - `#planche`: the 14 states side by side, frozen. Quick visual check.
 - `#etat=orbit&stop`: opens one state directly, playback paused.
+- `#obs`: the avatar alone on a transparent background, looping your saved
+  montage — drop it in as an OBS (or any capture tool) browser source to use the
+  bot as a live desktop pet. Add `&etat=<id>` to loop a single state, or
+  `&suite=orbit,wink:1,idle:5` to encode a whole sequence in the link itself
+  (state names separated by commas, each with an optional `:seconds` hold), which
+  is how you share a bespoke montage without relying on saved state. `&stop`
+  freezes it, and the usual `&forme=…&couleur=…&expression=…` pin a look, so one
+  link fully describes the pet.
 
 ![The 14 states, frozen side by side](docs/states.png)
 

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { t } from '@/i18n'
 
-export type ViewId = 'animations' | 'personnaliser' | 'reglages'
+export type ViewId = 'animations' | 'personnaliser' | 'jeu' | 'reglages'
 
 const view = defineModel<ViewId>({ default: 'personnaliser' })
 
@@ -12,6 +12,7 @@ const view = defineModel<ViewId>({ default: 'personnaliser' })
  */
 const ITEMS = computed<Array<{ id: ViewId; label: string }>>(() => [
   { id: 'personnaliser', label: t('rail.customize') },
+  { id: 'jeu', label: t('rail.game') },
   { id: 'animations', label: t('rail.animations') },
   { id: 'reglages', label: t('rail.settings') }
 ])
@@ -88,6 +89,22 @@ const muted = ref<ViewId | null>(null)
               <path fill-rule="evenodd" clip-rule="evenodd" d="M2 12C2 10.7633 2 9.68875 2.02644 8.75002H21.9736C22 9.68875 22 10.7633 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12ZM13.014 12.5852C14.338 13.4395 15 13.8666 15 14.5C15 15.1334 14.338 15.5605 13.014 16.4148C11.6719 17.2807 11.0008 17.7137 10.5004 17.3958C10 17.0779 10 16.2186 10 14.5C10 12.7814 10 11.9221 10.5004 11.6042C11.0008 11.2863 11.6719 11.7193 13.014 12.5852Z" />
               <path d="M21.8958 7.25002C21.7486 5.48593 21.3932 4.32213 20.5355 3.46447C19.9382 2.86714 19.1924 2.51345 18.1987 2.30403L14.9014 7.25002H21.8958Z" />
             </g>
+          </svg>
+          <!-- Jeu : le triangle de lecture du meme pictogramme Solar. -->
+          <svg
+            v-else-if="item.id === 'jeu'"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path
+              fill="currentColor"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              transform="translate(12 12) scale(2.3) translate(-12.5 -14.5)"
+              d="M13.014 12.5852C14.338 13.4395 15 13.8666 15 14.5C15 15.1334 14.338 15.5605 13.014 16.4148C11.6719 17.2807 11.0008 17.7137 10.5004 17.3958C10 17.0779 10 16.2186 10 14.5C10 12.7814 10 11.9221 10.5004 11.6042C11.0008 11.2863 11.6719 11.7193 13.014 12.5852Z"
+            />
           </svg>
           <!--
             Reglages : la roue dentee de Solar (`solar:settings-bold`). Elle est

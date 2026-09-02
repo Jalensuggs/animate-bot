@@ -42,6 +42,7 @@ import {
   type FormatCycle
 } from '@/ui/export'
 import { HUMEURS } from '@/ui/gaze'
+import { useBotInteractions } from '@/ui/useBotInteractions'
 import { INTRO, INTRO_GAZE, POSE_AT, introDue } from '@/ui/intro'
 import { lienPartage, litReglagesPartages } from '@/ui/partage'
 import { ecris, lis, type NomStocke } from '@/ui/stockage'
@@ -389,6 +390,18 @@ const played = computed(() => {
   return calme.value ? ENTREE_CALME : ENTREE
 })
 
+const {
+  follow: interactFollow,
+  lookStyle,
+  overlayExpression,
+  cycleOverride,
+  onAvatarClick,
+  mode: interactionMode
+} = useBotInteractions({ view, playing, preview, intro, block })
+
+/** Montage affiche : reaction de clic ou montage de la vue. */
+const displayedCycle = computed(() => cycleOverride.value ?? played.value)
+
 watch(view, (now, before) => {
   // Changer de vue interrompt l'arrivee : elle n'a de sens que sur la page
   // d'accueil, ou elle depose la boule a sa place. Seul un lien `#etat=` suivi
@@ -539,6 +552,11 @@ watch(view, (v) => {
     i++
   }, HUMEUR_MS)
 })
+
+/** Expression affichee : humeur des reglages, puis defilement, puis choix utilisateur. */
+const displayedExpression = computed(
+  () => humeur.value ?? overlayExpression.value ?? expression.value
+)
 
 const order = computed(() => SEQUENCE.map((id) => STATES.find((s) => s.id === id)!))
 
@@ -904,22 +922,30 @@ watch(
               ? 'max-w-[min(560px,calc(100dvh_-_6rem))]'
               : 'max-w-[min(460px,calc(100dvh_-_var(--timeline)_-_7rem))]',
             nue && 'avatar--intro',
-            view === 'reglages' && !preview && 'avatar--geant'
+            view === 'reglages' && !preview && 'avatar--geant',
+            interactionMode.click && !nue && 'cursor-pointer'
           ]"
+          role="button"
+          :tabindex="interactionMode.click && !nue ? 0 : undefined"
+          :aria-label="interactionMode.click && !nue ? t('interactions.click') : undefined"
+          @click="onAvatarClick"
+          @keydown.enter.prevent="onAvatarClick"
+          @keydown.space.prevent="onAvatarClick"
         >
           <BloubBot
             ref="bot"
-            class="h-auto max-w-full"
+            class="h-auto max-w-full pointer-events-none"
             v-model:state="state"
             v-model:block="block"
             v-model:elapsed="elapsed"
             v-model:playing="playing"
-            :cycle="played"
+            :cycle="displayedCycle"
             :size="preview ? 560 : 440"
             :shape="forme"
             :color="color"
-            :expression="humeur ?? expression"
-            :follow="view === 'reglages'"
+            :expression="displayedExpression"
+            :follow="interactFollow"
+            :look-style="lookStyle"
             :gaze="intro ? INTRO_GAZE : null"
           />
         </div>

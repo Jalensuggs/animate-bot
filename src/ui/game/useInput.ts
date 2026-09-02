@@ -1,5 +1,4 @@
 import type { GameInput } from '@/game/types'
-import { debugLog } from './debugLog'
 
 export interface GameInputController {
   attach: () => void
@@ -17,7 +16,6 @@ export function createInputController(): GameInputController {
 
   const onKeyDown = (event: KeyboardEvent) => {
     const code = event.code
-    const heldBefore = held.has(code)
     if (
       [
         'ArrowLeft',
@@ -34,29 +32,11 @@ export function createInputController(): GameInputController {
     ) {
       event.preventDefault()
     }
-    if (['ArrowUp', 'Space', 'KeyW'].includes(code)) {
-      // #region agent log
-      debugLog('A', 'useInput.ts:onKeyDown', 'jump keydown received', {
-        code,
-        repeat: event.repeat,
-        heldBefore,
-        defaultPrevented: event.defaultPrevented
-      })
-      // #endregion
-    }
     if (!held.has(code)) pressed.add(code)
     held.add(code)
   }
 
   const onKeyUp = (event: KeyboardEvent) => {
-    if (['ArrowUp', 'Space', 'KeyW'].includes(event.code)) {
-      // #region agent log
-      debugLog('B', 'useInput.ts:onKeyUp', 'jump keyup received', {
-        code: event.code,
-        heldBefore: held.has(event.code)
-      })
-      // #endregion
-    }
     held.delete(event.code)
   }
   const active = (...codes: string[]) => codes.some((code) => held.has(code))
@@ -80,14 +60,6 @@ export function createInputController(): GameInputController {
         jumpPressed: once('ArrowUp', 'Space', 'KeyW', 'TouchJump'),
         skillPressed: once('KeyZ', 'KeyX', 'TouchSkill'),
         restartPressed: once('KeyR', 'TouchRestart')
-      }
-      if (input.jumpPressed) {
-        // #region agent log
-        debugLog('A', 'useInput.ts:read', 'jump edge consumed by game loop', {
-          heldJump: active('ArrowUp', 'Space', 'KeyW'),
-          heldCount: held.size
-        })
-        // #endregion
       }
       pressed.clear()
       return input

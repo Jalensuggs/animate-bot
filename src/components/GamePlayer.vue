@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
 import BloubBot from '@/components/BloubBot.vue'
 import type { StateId } from '@/bot/states'
-import { debugLog } from '@/ui/game/debugLog'
 
 const props = defineProps<{
   x: number
@@ -17,31 +15,10 @@ const props = defineProps<{
 }>()
 
 const TAILLE = 76
-const root = ref<SVGGElement | null>(null)
-let lastBand = Math.floor(props.y / 25)
-
-watch(
-  () => props.y,
-  async (y) => {
-    const band = Math.floor(y / 25)
-    if (band === lastBand) return
-    lastBand = band
-    await nextTick()
-    // #region agent log
-    debugLog('F', 'GamePlayer.vue:y-watch', 'player position reached rendered SVG', {
-      propY: y,
-      propX: props.x,
-      domTransform: root.value?.getAttribute('transform') ?? null
-    })
-    // #endregion
-  },
-  { flush: 'post' }
-)
 </script>
 
 <template>
   <g
-    ref="root"
     :transform="`translate(${x} ${y})`"
     :opacity="invulnerable && Math.floor(time * 14) % 2 === 0 ? 0.38 : 1"
   >

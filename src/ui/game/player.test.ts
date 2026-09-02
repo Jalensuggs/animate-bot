@@ -1,17 +1,12 @@
 // @vitest-environment happy-dom
 import { createApp, defineComponent, h, nextTick, ref } from 'vue'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import GamePlayer from '@/components/GamePlayer.vue'
 
 const mounted: Array<() => void> = []
 
-beforeEach(() => {
-  vi.spyOn(navigator, 'sendBeacon').mockReturnValue(true)
-})
-
 afterEach(() => {
   while (mounted.length) mounted.pop()!()
-  vi.restoreAllMocks()
 })
 
 describe('rendu du joueur', () => {

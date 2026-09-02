@@ -67,6 +67,20 @@ describe('simulation', () => {
     expect(game.player.vy).toBeGreaterThan(vy)
   })
 
+  it('rend visible une pression breve avant de revenir au sol', () => {
+    let game = createGame(1, 'cercle')
+    for (let i = 0; i < 30; i++) game = stepGame(game, rien, 1 / 60)
+    const sol = game.player.y
+
+    game = stepGame(game, { ...rien, jumpPressed: true }, 1 / 60)
+    for (let i = 0; i < 11; i++) game = stepGame(game, rien, 1 / 60)
+    expect(game.player.y).toBeLessThan(sol - 50)
+
+    for (let i = 0; i < 108; i++) game = stepGame(game, rien, 1 / 60)
+    expect(game.player.y).toBe(sol)
+    expect(game.player.grounded).toBe(true)
+  })
+
   it('declenche le sprint du troisieme niveau', () => {
     const game = stepGame(createGame(3, 'cercle'), { ...rien, skillPressed: true }, 0)
     expect(game.player.state).toBe('play')

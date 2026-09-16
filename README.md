@@ -1,5 +1,7 @@
 # Animate Bot
 
+**GitHub Pages 预览 →** https://jalensuggs.github.io/animate-bot/
+
 A customizable SVG avatar inspired by the x.ai bot: **one filled shape** that
 morphs between 14 states, **two white shapes** for the eyes that morph
 independently, on a plain background. No animation library.

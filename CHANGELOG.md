@@ -5,6 +5,22 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- **`#obs`: a transparent-background widget mode** for use as a live desktop pet in
+  OBS (or any capture tool with a browser source). It renders the avatar alone —
+  no rail, panel or montage bar — on a transparent page, looping the saved montage
+  so the capture tool can composite the bot over a stream. `&etat=<id>` loops a
+  single state instead, `&stop` freezes it, and the existing
+  `&forme=…&couleur=…&expression=…` share parameters pin a look, so one link fully
+  describes the pet. Transparency needed no new drawing: the body stays opaque and
+  the eyes' white is the `paper` fill the component already paints under the
+  silhouette, so only the page background gives way to transparent. `&suite=` also
+  encodes a whole montage in the link (`orbit,wink:1,idle:5` — comma-separated
+  states, each with an optional `:seconds` hold), since the default montage lives
+  in `localStorage` and so doesn't travel with a shared link; unknown states are
+  skipped and given durations are clamped to a block's bounds.
+
 ### Fixed
 
 - **The Settings and Animations views were unusable below 64rem.** Everything stacks

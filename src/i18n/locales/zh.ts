@@ -21,6 +21,10 @@ const zh: typeof fr = {
     back: '返回播放器'
   },
 
+  interactions: {
+    click: '点击让机器人眨眼'
+  },
+
   rail: {
     nav: '版块',
     customize: '个性化',

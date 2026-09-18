@@ -28,6 +28,10 @@ export default {
     back: 'Retour au lecteur'
   },
 
+  interactions: {
+    click: 'Cliquer pour faire un clin d\u2019\u0153il'
+  },
+
   rail: {
     nav: 'Sections',
     customize: 'Personnaliser',

@@ -6,6 +6,7 @@ import BloubBot from '@/components/BloubBot.vue'
 import ExportBar from '@/components/ExportBar.vue'
 import CycleDialog from '@/components/CycleDialog.vue'
 import GifDialog from '@/components/GifDialog.vue'
+import GameView from '@/components/GameView.vue'
 import Settings from '@/components/Settings.vue'
 import SideRail, { type ViewId } from '@/components/SideRail.vue'
 import Timeline from '@/components/Timeline.vue'
@@ -77,6 +78,7 @@ import { POSES, SEQUENCE, STATES, type StateId } from '@/bot/states'
 function readHash() {
   const params = new URLSearchParams(location.hash.slice(1))
   const asked = params.get('etat') as StateId | null
+  const requestedLevel = Number.parseInt(params.get('niveau') ?? '1', 10)
   // on ne fait jamais confiance a l'URL : l'etat doit exister
   const known = STATES.some((s) => s.id === asked)
   return {
@@ -84,6 +86,8 @@ function readHash() {
     named: known,
     playing: !params.has('stop'),
     gallery: params.has('planche'),
+    game: params.has('jeu'),
+    gameLevel: Number.isFinite(requestedLevel) ? Math.max(1, Math.min(5, requestedLevel)) : 1,
     // `#arrivee` : rejouer l'arrivee sans avoir a revenir sur le site. Elle ne se
     // joue qu'a la VENUE, donc sans ce lien on ne peut pas la revoir de la seance.
     arrivee: params.has('arrivee'),
@@ -93,6 +97,7 @@ function readHash() {
 
 const initial = readHash()
 const gallery = ref(initial.gallery)
+const gameLevel = ref(initial.gameLevel)
 
 /* ----------------------------------------------------------------- arrivee */
 
@@ -133,13 +138,14 @@ const intro = ref(
   // `#arrivee` demande explicitement a la voir : il court-circuite la regle de
   // declenchement, c'est tout son objet — y compris apres rechargement, sinon on
   // ne pourrait la regarder qu'une fois.
-  initial.arrivee ||
+  !initial.game &&
+    (initial.arrivee ||
     introDue({
       named: initial.named,
       gallery: initial.gallery,
       rechargement: navigation !== 'navigate',
       calme: calme.value
-    })
+    }))
 )
 
 /* ------------------------------------------------------------------ cycles */
@@ -236,7 +242,7 @@ window.addEventListener('pagehide', enregistreCycles)
 
 // La personnalisation est la vue d'accueil, sauf si l'URL designe un etat
 // precis : dans ce cas le lien vise clairement le lecteur.
-const view = ref<ViewId>(initial.named ? 'animations' : 'personnaliser')
+const view = ref<ViewId>(initial.game ? 'jeu' : initial.named ? 'animations' : 'personnaliser')
 
 /**
  * Apercu : la scene seule, sans barre laterale, sans panneau ni montage. On en
@@ -316,6 +322,11 @@ window.addEventListener('hashchange', () => {
   }
   gallery.value = next.gallery
   if (next.gallery) return
+  if (next.game) {
+    gameLevel.value = next.gameLevel
+    view.value = 'jeu'
+    return
+  }
   // Un lien d'avatar vise la personnalisation. Les valeurs ont deja ete
   // verifiees par `litReglagesPartages`, une valeur absente conserve le choix
   // courant pour que les liens partiels restent utiles.
@@ -477,6 +488,35 @@ const expression = ref<ExpressionId>(
 watch(shape, (v) => ecris('forme', v))
 watch(color, (v) => ecris('couleur', v))
 watch(expression, (v) => ecris('expression', v))
+
+const progression = Number.parseInt(lis('progression') ?? '1', 10)
+const unlockedLevel = ref(Number.isFinite(progression) ? Math.max(1, Math.min(5, progression)) : 1)
+
+function gameAt(id: number) {
+  gameLevel.value = Math.max(1, Math.min(5, id))
+  if (view.value !== 'jeu') return
+  ecritParNous = `#jeu&niveau=${gameLevel.value}`
+  location.replace(ecritParNous)
+}
+
+function completeLevel(id: number) {
+  const unlocked = Math.min(5, id + 1)
+  if (unlocked <= unlockedLevel.value) return
+  unlockedLevel.value = unlocked
+  ecris('progression', String(unlocked))
+}
+
+function exitGame() {
+  view.value = 'personnaliser'
+  ecritParNous = '#'
+  location.replace(ecritParNous)
+}
+
+watch(view, (value) => {
+  if (value !== 'jeu') return
+  intro.value = false
+  gameAt(gameLevel.value)
+})
 
 /**
  * Nom du produit, en capitales pour le grand mot du pied de page. PAS traduit :
@@ -807,6 +847,18 @@ watch(
       </figure>
     </div>
   </div>
+
+  <GameView
+    v-else-if="view === 'jeu'"
+    :shape="shape"
+    :color="color"
+    :expression="expression"
+    :initial-level="gameLevel"
+    :unlocked="unlockedLevel"
+    @exit="exitGame"
+    @level="gameAt"
+    @complete="completeLevel"
+  />
 
   <template v-else>
     <!-- titre de structure : la page n'affiche volontairement aucun titre, mais
